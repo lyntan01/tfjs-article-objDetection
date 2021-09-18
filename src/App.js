@@ -10,11 +10,11 @@ import {
   Button,
 } from "@material-ui/core";
 import './App.css'
-import MenuIcon from "@material-ui/icons/Menu";
+import DeleteOutlineTwoToneIcon from "@material-ui/icons/DeleteOutlineTwoTone";
 import { makeStyles } from "@material-ui/core/styles";
 import * as cocoSsd from "@tensorflow-models/coco-ssd";
 import * as tf from "@tensorflow/tfjs";
-import {loadGraphModel} from '@tensorflow/tfjs-converter';
+// import {loadGraphModel} from '@tensorflow/tfjs-converter';
 
 // import * as posenet from '@tensorflow-models/posenet';
 import Webcam from "react-webcam";
@@ -30,7 +30,7 @@ function App() {
     root: {
       flexGrow: 1,
     },
-    menuButton: {
+    dustbinIcon: {
       marginRight: theme.spacing(2),
     },
     title: {
@@ -42,30 +42,38 @@ function App() {
   
   const webcamRef = React.useRef(null);
 
-  const [videoWidth, setVideoWidth] = useState(960);
-  const [videoHeight, setVideoHeight] = useState(640);
+  const [videoWidth, setVideoWidth] = useState(853);
+  const [videoHeight, setVideoHeight] = useState(480);
 
 
   const [model, setModel] = useState();
   const [prediction, setPrediction] = useState("");
+  const [message, setMessage] = useState("Press 'Start Detect' to start!");
 
   function capitalizeFirstLetter(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
   }
 
+  function getPredictionMesage(category) {
+    if (category != "Trash") {
+      return "This item belongs to the " + category + " bin!";
+    } else {
+      return "This item cannot be recycled. Please throw it in a nearby wastebin."
+    }
+  }
   
   async function loadModel(url) {
     try {
 
       // For layered model
-      const mode = await tf.loadLayersModel(url.model);
+      // const mode = await tf.loadLayersModel(url.model);
 
-      // const model = await cocoSsd.load();
+      const model = await cocoSsd.load();
       setModel(model);
       console.log("Load model success");
     } catch (err) {
       console.log(err);
-      console.log("failed load model");
+      console.log("Failed load model");
     }
   }
 
@@ -93,16 +101,21 @@ function App() {
       webcamRef.current.video.videoHeight
     );
 
+    setMessage("No item detected");
+
     if (predictions.length > 0) {
+
       // setPredictionData(predictions);
       console.log(predictions);
       for (let n = 0; n < predictions.length; n++) {
         // Check scores
         console.log(n);
+
         if (predictions[n].score > 0.7) {
 
           // if prediction score > 70%, update prediction
-          setPrediction(capitalizeFirstLetter(predictions[n].class))
+          setPrediction(capitalizeFirstLetter(predictions[n].class));
+          setMessage(getPredictionMesage(prediction));
 
           let bboxLeft = predictions[n].bbox[0];
           let bboxTop = predictions[n].bbox[1];
@@ -158,31 +171,23 @@ function App() {
 
  
   const videoConstraints = {
-    height: 1080,
-    width: 1920,
+    height: 480,
+    width: 853,
     maxWidth: "100vw",
     facingMode: "environment",
   };
 
   return (
-    <div
-      style={{
-        width: "100%",
-        height: "100%",
-        marginTop: -8,
-        backgroundImage:
-          "radial-gradient( circle 993px at 0.5% 50.5%,  rgba(137,171,245,0.37) 0%, rgba(245,247,252,1) 100.2% )",
-      }}
-    >
+    <div class="container">
       <AppBar position="static">
         <Toolbar>
           <IconButton
             edge="start"
-            className={classes.menuButton}
+            className={classes.dustbinIcon}
             color="inherit"
             aria-label="menu"
           >
-            <MenuIcon />
+            <DeleteOutlineTwoToneIcon />
           </IconButton>
           <Typography variant="h6" className={classes.title}>
             Trash Classification System
@@ -194,7 +199,6 @@ function App() {
       <Grid
         container
         style={{
-          height: "50vh",
           width: "100%",
           alignItems: "center",
           justifyContent: "center",
@@ -213,7 +217,7 @@ function App() {
             flexDirection: "column",
           }}
         >
-          <h1>{prediction ? "Category : " + prediction : "No item detected"}</h1>
+          <h2>{message}</h2>
           <>
             <Box mt={2} />
             {
@@ -234,7 +238,7 @@ function App() {
             }
             <Box mt={2} />{" "}
           </>
-          <div style={{ position: "absolute", top: "400px", zIndex: "9999" }}>
+          <div style={{ position: "absolute", top: "250px", zIndex: "9999" }}>
             <canvas
               id="myCanvas"
               width={videoWidth}
@@ -242,7 +246,7 @@ function App() {
               style={{ backgroundColor: "transparent" }}
             />
           </div>
-          <div style={{ position: "absolute", top: "400px" }}>
+          <div style={{ position: "absolute", top: "250px" }}>
             {/* <img
           style={{ width: videoWidth, objectFit: "fill" }}
           id="img"
