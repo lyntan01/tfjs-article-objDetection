@@ -227,8 +227,8 @@ function App() {
             flexDirection: "column",
           }}
         >
-          <h2>{message}</h2>
-          <h4>{points===-1 ? "" : "You have earned " + points + " points!"}</h4>
+          <h2 class="title">{message}</h2>
+          <h4 class="subtitle">{points===-1 ? "" : "You have earned " + points + " points!"}</h4>
           <>
             <Box mt={2} />
             {

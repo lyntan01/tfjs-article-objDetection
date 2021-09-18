@@ -6,6 +6,13 @@
     "radial-gradient( circle 993px at 0.5% 50.5%,  rgba(137,171,245,0.37) 0%, rgba(245,247,252,1) 100.2% )",
 }
 
+.title {
+  margin: 30px 10px 10px 10px;
+}
+
+.subtitle {
+  margin: 0px 0px 10px 0px;
+}
 
 .blink_me {
     animation: blinker 1s linear infinite;
