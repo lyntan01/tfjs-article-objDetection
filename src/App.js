@@ -49,16 +49,17 @@ function App() {
   const [model, setModel] = useState();
   const [prediction, setPrediction] = useState("");
   const [message, setMessage] = useState("Press 'Start Detect' to start!");
+  const [points, setPoints] = useState(-1);
 
   function capitalizeFirstLetter(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
   }
 
-  function getPredictionMesage(category) {
-    if (category != "Trash") {
-      return "This item belongs to the " + category + " bin!";
-    } else {
-      return "This item cannot be recycled. Please throw it in a nearby wastebin."
+  function updatePredictionMesage(category) {
+    if (category !== "Trash") {
+      setMessage("This item belongs to the " + category + " bin!");
+    } else if (category !== "") {
+      setMessage("This item cannot be recycled. Please throw it in a nearby wastebin.");
     }
   }
   
@@ -102,6 +103,8 @@ function App() {
     );
 
     setMessage("No item detected");
+    setPoints(-1);
+    console.log("No item detected yet"); //debugging
 
     if (predictions.length > 0) {
 
@@ -112,10 +115,6 @@ function App() {
         console.log(n);
 
         if (predictions[n].score > 0.7) {
-
-          // if prediction score > 70%, update prediction
-          setPrediction(capitalizeFirstLetter(predictions[n].class));
-          setMessage(getPredictionMesage(prediction));
 
           let bboxLeft = predictions[n].bbox[0];
           let bboxTop = predictions[n].bbox[1];
@@ -149,6 +148,17 @@ function App() {
           ctx.stroke();
 
           console.log("detected");
+
+          // if prediction score > 70%, update prediction
+          const category = capitalizeFirstLetter(predictions[n].class)
+          setPrediction(category);
+          if (category !== "Trash") {
+            setMessage("This item belongs to the " + category + " bin!");
+            setPoints(5);
+          } else {
+            setMessage("This item cannot be recycled. Please throw it in a nearby wastebin.");
+            setPoints(0);
+          }
         }
       }
     }
@@ -218,6 +228,7 @@ function App() {
           }}
         >
           <h2>{message}</h2>
+          <h4>{points===-1 ? "" : "You have earned " + points + " points!"}</h4>
           <>
             <Box mt={2} />
             {
