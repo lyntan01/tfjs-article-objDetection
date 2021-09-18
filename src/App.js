@@ -14,7 +14,7 @@ import MenuIcon from "@material-ui/icons/Menu";
 import { makeStyles } from "@material-ui/core/styles";
 import * as cocoSsd from "@tensorflow-models/coco-ssd";
 import * as tf from "@tensorflow/tfjs";
-// import {loadGraphModel} from '@tensorflow/tfjs-converter';
+import {loadGraphModel} from '@tensorflow/tfjs-converter';
 
 // import * as posenet from '@tensorflow-models/posenet';
 import Webcam from "react-webcam";
@@ -23,6 +23,9 @@ import { createWorker,createScheduler  } from 'tesseract.js';
 
 
 function App() {
+
+  const url = {model: './tfjsmodel/model.json'}
+
   const useStyles = makeStyles((theme) => ({
     root: {
       flexGrow: 1,
@@ -51,11 +54,15 @@ function App() {
   }
 
   
-  async function loadModel() {
+  async function loadModel(url) {
     try {
-      const model = await cocoSsd.load();
+
+      // For layered model
+      const mode = await tf.loadLayersModel(url.model);
+
+      // const model = await cocoSsd.load();
       setModel(model);
-      console.log("setloadedModel");
+      console.log("Load model success");
     } catch (err) {
       console.log(err);
       console.log("failed load model");
