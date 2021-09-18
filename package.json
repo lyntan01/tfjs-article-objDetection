@@ -23,7 +23,7 @@
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-html5-camera-photo": "^1.5.4",
-    "react-scripts": "3.4.3",
+    "react-scripts": "^4.0.3",
     "react-webcam": "^5.2.2",
     "stats.js": "^0.17.0",
     "tesseract.js": "2.0.0"

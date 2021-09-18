@@ -1,5 +1,4 @@
 import React, { useEffect, useState, useRef } from "react";
-import logo from "./logo.svg";
 import {
   TextField,
   Grid,
@@ -45,8 +44,11 @@ function App() {
 
 
   const [model, setModel] = useState();
+  const [prediction, setPrediction] = useState("");
 
- 
+  function capitalizeFirstLetter(string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+  }
 
   
   async function loadModel() {
@@ -90,7 +92,11 @@ function App() {
       for (let n = 0; n < predictions.length; n++) {
         // Check scores
         console.log(n);
-        if (predictions[n].score > 0.8) {
+        if (predictions[n].score > 0.7) {
+
+          // if prediction score > 70%, update prediction
+          setPrediction(capitalizeFirstLetter(predictions[n].class))
+
           let bboxLeft = predictions[n].bbox[0];
           let bboxTop = predictions[n].bbox[1];
           let bboxWidth = predictions[n].bbox[2];
@@ -127,7 +133,7 @@ function App() {
       }
     }
 
-    setTimeout(() => predictionFunction(), 500);
+    // setTimeout(() => predictionFunction(), 500);
   }
 
 
@@ -151,12 +157,6 @@ function App() {
     facingMode: "environment",
   };
 
-
-   
- 
-
-
-
   return (
     <div
       style={{
@@ -178,7 +178,7 @@ function App() {
             <MenuIcon />
           </IconButton>
           <Typography variant="h6" className={classes.title}>
-            Object Detection
+            Trash Classification System
           </Typography>
         </Toolbar>
       </AppBar>
@@ -187,12 +187,12 @@ function App() {
       <Grid
         container
         style={{
-          height: "100vh",
+          height: "50vh",
           width: "100%",
           alignItems: "center",
           justifyContent: "center",
           display: "flex",
-          padding: 20,
+          // padding: 20,
         }}
       >
         <Grid
@@ -206,6 +206,7 @@ function App() {
             flexDirection: "column",
           }}
         >
+          <h1>{prediction ? "Category : " + prediction : "No item detected"}</h1>
           <>
             <Box mt={2} />
             {
