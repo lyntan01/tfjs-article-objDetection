@@ -24,7 +24,10 @@ import { createWorker,createScheduler  } from 'tesseract.js';
 
 function App() {
 
-  const url = {model: './tfjsmodel/model.json'}
+  const url = {
+    model: 'http://localhost:8887/model.json',
+    // model: 'tjfsmodel/model.json',
+  }
 
   const useStyles = makeStyles((theme) => ({
     root: {
@@ -63,15 +66,17 @@ function App() {
     }
   }
   
-  async function loadModel(url) {
+  async function loadModel() {
     try {
 
       // For layered model
-      // const mode = await tf.loadLayersModel(url.model);
+      console.log("Loading model from " + 'http://localhost:8887/model.json'); 
+      const model = await tf.loadLayersModel('http://localhost:8887/model.json');
+      // const model = await cocoSsd.load();
 
-      const model = await cocoSsd.load();
       setModel(model);
       console.log("Load model success");
+      console.log(model.summary())
     } catch (err) {
       console.log(err);
       console.log("Failed load model");
@@ -87,7 +92,7 @@ function App() {
 
 
   async function predictionFunction() {
-    const predictions = await model.detect(document.getElementById("img"));
+    const predictions = await model.predict(document.getElementById("img").value);
     // setVideoHeight(webcamRef.current.video.videoHeight);
     // setVideoWidth(webcamRef.current.video.videoWidth);
     var cnvs = document.getElementById("myCanvas");
@@ -188,7 +193,7 @@ function App() {
   };
 
   return (
-    <div class="container">
+    <div className="container">
       <AppBar position="static">
         <Toolbar>
           <IconButton
@@ -227,8 +232,8 @@ function App() {
             flexDirection: "column",
           }}
         >
-          <h2 class="title">{message}</h2>
-          <h4 class="subtitle">{points===-1 ? "" : "You have earned " + points + " points!"}</h4>
+          <h2 className="title">{message}</h2>
+          <h4 className="subtitle">{points===-1 ? "" : "You have earned " + points + " points!"}</h4>
           <>
             <Box mt={2} />
             {
